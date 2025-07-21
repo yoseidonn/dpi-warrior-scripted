@@ -1,0 +1,44 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "vpn.crew-tr.com",
+            "port": 10000,
+            "users": [
+              {
+                "id": "e32636fd-9aae-4cc3-802e-c00033998aba",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "none",
+        "xhttpSettings": {
+          "path": "/banana",
+          "host": "vpn.crew-tr.com",
+          "acceptProxyProtocol": false
+        }
+      }
+    }
+  ]
+}
