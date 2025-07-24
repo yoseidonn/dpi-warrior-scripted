@@ -64,18 +64,31 @@ def create_config(uuid, domain, port, tls):
     print("[+] Creating config.json")
     config = {
         "log": {
-            "loglevel": "warning"
+            "loglevel": "info"
         },
-        "inbounds": [{
-            "port": PROXY_PORT,
-            "listen": "127.0.0.1",
-            "protocol": "socks",
-            "settings": {
-                "auth": "noauth",
-                "udp": True
+        "inbounds": [
+            {
+                "tag": "socks-in",
+                "port": PROXY_PORT,
+                "listen": "127.0.0.1",
+                "protocol": "socks",
+                "settings": {
+                    "auth": "noauth",
+                    "udp": True
+                }
+            },
+            {
+                "tag": "http-in",
+                "port": 10809,  # Single HTTP proxy for both HTTP and HTTPS
+                "listen": "127.0.0.1",
+                "protocol": "http",
+                "settings": {
+                    "timeout": 300
+                }
             }
-        }],
+        ],
         "outbounds": [{
+            "tag": "vless-out",
             "protocol": "vless",
             "settings": {
                 "vnext": [{
@@ -100,7 +113,17 @@ def create_config(uuid, domain, port, tls):
                     }
                 }
             }
-        }]
+        }],
+        "routing": {
+            "domainStrategy": "AsIs",
+            "rules": [
+                {
+                    "type": "field",
+                    "inboundTag": ["socks-in"],
+                    "outboundTag": "vless-out"
+                }
+            ]
+        }
     }
 
     with open(CONFIG_PATH, "w") as f:
