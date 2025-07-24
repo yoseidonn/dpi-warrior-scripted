@@ -1,6 +1,7 @@
 import os, platform, requests
 import zipfile, subprocess, shutil
 import json
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -9,11 +10,11 @@ load_dotenv()
 # === CONFIG ===
 UUID = os.getenv("UUID")
 DOMAIN = os.getenv("DOMAIN")
-PORT = 10000
+PORT = 443
 XRAY_VERSION = "v25.6.8"
 DOWNLOAD_BASE = f"https://github.com/XTLS/Xray-core/releases/download/{XRAY_VERSION}"
 PROXY_PORT = 10808
-XHTTP_PATH = "/banana"
+XHTTP_PATH = "/xray"
 
 # === END OF CONFIG ===
 
@@ -43,39 +44,94 @@ def detect_platform():
     print(f"[~] Detected OS: {os_name}, Arch: {arch}")
     return asset, bin_name
 
-def create_config(uuid, domain, port, xhttp_path):
+def create_config(uuid: str, domain: str, proxy_port: int = 10808, remote_port: int = 443, path: str = "/xray") -> None:
     config = {
-        "log": {"loglevel": "warning"},
-        "inbounds": [{
-            "port": PROXY_PORT,
-            "listen": "127.0.0.1",
-            "protocol": "socks",
-            "settings": {"auth": "noauth", "udp": True}
-        }],
-        "outbounds": [{
-            "protocol": "vless",
-            "settings": {
-                "vnext": [{
-                    "address": domain,
-                    "port": port,
-                    "users": [{"id": uuid, "encryption": "none"}]
-                }]
-            },
-            "streamSettings": {
-                "network": "xhttp",
-                "security": "none",
-                "xhttpSettings": {
-                    "path": xhttp_path,
-                    "host": domain,
-                    "acceptProxyProtocol": False
+        "log": {
+            "loglevel": "warning"
+        },
+        "inbounds": [
+            {
+                "tag": "socks-in",
+                "port": proxy_port,
+                "listen": "127.0.0.1",
+                "protocol": "socks",
+                "settings": {
+                    "auth": "noauth",
+                    "udp": True
                 }
             }
-        }]
+        ],
+        "outbounds": [
+            {
+                "tag": "vless-out",
+                "protocol": "vless",
+                "settings": {
+                    "vnext": [
+                        {
+                            "address": domain,
+                            "port": remote_port,
+                            "users": [
+                                {
+                                    "id": uuid,
+                                    "encryption": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "streamSettings": {
+                    "network": "xhttp",
+                    "security": "none",
+                    "xhttpSettings": {
+                        "path": path,
+                        "host": domain,
+                        "acceptProxyProtocol": False
+                    }
+                }
+            },
+            {
+                "tag": "blocked",
+                "protocol": "blackhole",
+                "settings": {}
+            }
+        ],
+        "dns": {
+            "servers": [
+                "1.1.1.1",
+                "8.8.8.8",
+                "localhost"
+            ]
+        },
+        "routing": {
+            "domainStrategy": "AsIs",
+            "rules": [
+                {
+                    "type": "field",
+                    "inboundTag": ["socks-in"],
+                    "outboundTag": "vless-out"
+                },
+                {
+                    "type": "field",
+                    "domain": ["geosite:category-ads"],
+                    "outboundTag": "blocked"
+                }
+            ]
+        }
     }
-    os.makedirs("xray", exist_ok=True)
-    with open("xray/config.json", "w") as f:
-        json.dump(config, f, indent=2)
-    print("[+] Created xray/config.json")
+
+    config_path = Path("xray/config.json")
+    config_path.write_text(json.dumps(config, indent=2))
+    print(f"Client config written to {config_path.resolve()}")
+
+    # === Coolify-style Printouts ===
+    print("\n✅ Xray Client Configuration Generated!")
+    print(f"📄 Config Path: {config_path.resolve()}")
+    print(f"🧊 Local SOCKS5 Proxy: 127.0.0.1:{proxy_port}")
+    print(f"🔐 Remote VLESS+XHTTP Server: {domain}:{remote_port}{path}")
+    print(f"🆔 UUID: {uuid}")
+    print("🌐 DNS forwarding: Enabled (1.1.1.1, 8.8.8.8)\n")
+    print("🚀 To start Xray:")
+    print("   ./xray run -c config.json\n")
 
 def download_xray(asset):
     url = f"{DOWNLOAD_BASE}/{asset}"
@@ -135,7 +191,7 @@ def run_xray(bin_name):
 if __name__ == "__main__":
     check_tools()
     asset, bin_name = detect_platform()
-    create_config(UUID, DOMAIN, PORT, XHTTP_PATH)
+    create_config(UUID, DOMAIN, PROXY_PORT, PORT, XHTTP_PATH)
     download_xray(asset)
     extract_xray()
     run_xray(bin_name)

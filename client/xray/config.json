@@ -4,6 +4,7 @@
   },
   "inbounds": [
     {
+      "tag": "socks-in",
       "port": 10808,
       "listen": "127.0.0.1",
       "protocol": "socks",
@@ -15,12 +16,13 @@
   ],
   "outbounds": [
     {
+      "tag": "vless-out",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
             "address": "vpn.crew-tr.com",
-            "port": 10000,
+            "port": 443,
             "users": [
               {
                 "id": "e32636fd-9aae-4cc3-802e-c00033998aba",
@@ -34,11 +36,42 @@
         "network": "xhttp",
         "security": "none",
         "xhttpSettings": {
-          "path": "/banana",
+          "path": "/xray",
           "host": "vpn.crew-tr.com",
           "acceptProxyProtocol": false
         }
       }
+    },
+    {
+      "tag": "blocked",
+      "protocol": "blackhole",
+      "settings": {}
     }
-  ]
+  ],
+  "dns": {
+    "servers": [
+      "1.1.1.1",
+      "8.8.8.8",
+      "localhost"
+    ]
+  },
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "socks-in"
+        ],
+        "outboundTag": "vless-out"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ads"
+        ],
+        "outboundTag": "blocked"
+      }
+    ]
+  }
 }
