@@ -10,7 +10,7 @@ load_dotenv()
 # === CONFIG ===
 UUID = os.getenv("UUID")
 DOMAIN = os.getenv("DOMAIN")
-PORT = 80
+PORT = 443  # Change from 80 to 443
 XRAY_VERSION = "v25.6.8"
 DOWNLOAD_BASE = f"https://github.com/XTLS/Xray-core/releases/download/{XRAY_VERSION}"
 PROXY_PORT = 10808
@@ -47,7 +47,7 @@ def detect_platform():
 def create_config(uuid: str, domain: str, proxy_port: int = 10808, remote_port: int = 443, path: str = "/xray") -> None:
     config = {
         "log": {
-            "loglevel": "warning"  # Changed to info for debugging
+            "loglevel": "warning"
         },
         "inbounds": [
             {
@@ -69,6 +69,7 @@ def create_config(uuid: str, domain: str, proxy_port: int = 10808, remote_port: 
                     "timeout": 300
                 }
             }
+            # Removed the FTP inbound - Xray doesn't support it
         ],
         "outbounds": [
             {
@@ -90,7 +91,11 @@ def create_config(uuid: str, domain: str, proxy_port: int = 10808, remote_port: 
                 },
                 "streamSettings": {
                     "network": "xhttp",
-                    "security": "none",
+                    "security": "tls",
+                    "tlsSettings": {
+                        "serverName": domain,
+                        "allowInsecure": False
+                    },
                     "xhttpSettings": {
                         "path": path,
                         "host": domain,
@@ -116,7 +121,7 @@ def create_config(uuid: str, domain: str, proxy_port: int = 10808, remote_port: 
             "rules": [
                 {
                     "type": "field",
-                    "inboundTag": ["socks-in", "http-in", "ftp-in"],
+                    "inboundTag": ["socks-in", "http-in"],  # Removed "ftp-in", for future use proxychain or something else
                     "outboundTag": "vless-out"
                 },
                 {
@@ -132,7 +137,7 @@ def create_config(uuid: str, domain: str, proxy_port: int = 10808, remote_port: 
     config_path.write_text(json.dumps(config, indent=2))
     print(f"Client config written to {config_path.resolve()}")
 
-    # === Coolify-style Printouts ===
+    # === Printouts ===
     print("\n✅ Xray Client Configuration Generated!")
     print(f"📄 Config Path: {config_path.resolve()}")
     print(f"�� Local SOCKS5 Proxy: 127.0.0.1:{proxy_port}")
@@ -165,14 +170,11 @@ def print_proxy_details():
     print("="*60)
     print(f"Local SOCKS5 Proxy: 127.0.0.1:{PROXY_PORT}")
     print(f"Local HTTP Proxy: 127.0.0.1:10809")
-    print(f"Local FTP Proxy: 127.0.0.1:10810")
-    print()
     print("PROXY SETTINGS FOR APPLICATIONS:")
     print("-" * 40)
     print(f"SOCKS5 Proxy: socks5h://127.0.0.1:{PROXY_PORT}")
     print(f"HTTP Proxy:   http://127.0.0.1:10809")
     print(f"HTTPS Proxy:  http://127.0.0.1:10809")
-    print(f"FTP Proxy:    ftp://127.0.0.1:10810")
     print()
     print("SERVER CONNECTION DETAILS:")
     print("-" * 40)
@@ -182,7 +184,7 @@ def print_proxy_details():
     print(f"Transport: XHTTP")
     print(f"XHTTP Path: {XHTTP_PATH}")
     print(f"UUID: {UUID}")
-    print(f"Security: None (No TLS)")
+    print(f"Security: TLS (Encrypted)")
     print()
     print("USAGE EXAMPLES:")
     print("-" * 40)

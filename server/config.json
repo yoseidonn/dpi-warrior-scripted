@@ -1,39 +1,42 @@
 {
-    "log": {
-      "loglevel": "warning"
-    },
-    "inbounds": [
-      {
-        "port": 10000,
-        "protocol": "vless",
-        "settings": {
-          "clients": [
-            {
-              "id": "YOUR_UUID",
-              "flow": ""
-            }
-          ],
-          "decryption": "none"
-        },
-        "streamSettings": {
-          "network": "xhttp",
-          "security": "none",
-          "xhttpSettings": {
-            "path": "/xray",
-            "host": "YOUR_DOMAIN",
-            "acceptProxyProtocol": false
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 10000,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "YOUR_UUID",
+            "flow": ""
           }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "YOUR_DOMAIN"
         },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": ["http", "tls"]
+        "xhttpSettings": {
+          "path": "/xray",
+          "host": "YOUR_DOMAIN",
+          "acceptProxyProtocol": false
         }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls"]
       }
-    ],
-    "outbounds": [
-      {
-        "protocol": "freedom",
-        "settings": {}
-      }
-    ]
-  }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {}
+    }
+  ]
+}

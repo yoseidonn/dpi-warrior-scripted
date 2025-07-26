@@ -21,6 +21,15 @@
       "settings": {
         "timeout": 300
       }
+    },
+    {
+      "tag": "ftp-in",
+      "port": 10810,
+      "listen": "127.0.0.1",
+      "protocol": "ftp",
+      "settings": {
+        "timeout": 300
+      }
     }
   ],
   "outbounds": [
@@ -31,7 +40,7 @@
         "vnext": [
           {
             "address": "vpn.crew-tr.com",
-            "port": 80,
+            "port": 443,
             "users": [
               {
                 "id": "e32636fd-9aae-4cc3-802e-c00033998aba",
@@ -43,7 +52,11 @@
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "none",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "vpn.crew-tr.com",
+          "allowInsecure": false
+        },
         "xhttpSettings": {
           "path": "/xray",
           "host": "vpn.crew-tr.com",
