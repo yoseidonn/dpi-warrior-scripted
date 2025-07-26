@@ -203,6 +203,17 @@ if __name__ == "__main__":
     check_tools()
     asset, bin_name = detect_platform()
     create_config(UUID, DOMAIN, PROXY_PORT, PORT, XHTTP_PATH)
-    download_xray(asset)
-    extract_xray()
-    run_xray(bin_name)
+    try:
+        download_xray(asset)
+        extract_xray()
+    except Exception as e:
+        print(repr(e))
+        print("\n[!] Failed to download Xray, starting with existing Xray...")
+
+    try:
+        run_xray(bin_name)
+    except Exception as e:
+        print(repr(e))
+        print(f"\n[!] Failed to find {bin_name}.")
+        print("[!] Exiting...")
+        exit()
