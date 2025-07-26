@@ -21,15 +21,6 @@
       "settings": {
         "timeout": 300
       }
-    },
-    {
-      "tag": "ftp-in",
-      "port": 10810,
-      "listen": "127.0.0.1",
-      "protocol": "ftp",
-      "settings": {
-        "timeout": 300
-      }
     }
   ],
   "outbounds": [
@@ -84,8 +75,7 @@
         "type": "field",
         "inboundTag": [
           "socks-in",
-          "http-in",
-          "ftp-in"
+          "http-in"
         ],
         "outboundTag": "vless-out"
       },

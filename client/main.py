@@ -142,7 +142,6 @@ def create_config(uuid: str, domain: str, proxy_port: int = 10808, remote_port: 
     print(f"📄 Config Path: {config_path.resolve()}")
     print(f"�� Local SOCKS5 Proxy: 127.0.0.1:{proxy_port}")
     print(f"�� Local HTTP Proxy: 127.0.0.1:10809")
-    print(f"📁 Local FTP Proxy: 127.0.0.1:10810")
     print(f"�� Remote VLESS+XHTTP Server: {domain}:{remote_port}{path}")
     print(f"�� UUID: {uuid}")
     print("🌐 DNS forwarding: Enabled (1.1.1.1, 8.8.8.8)\n")
