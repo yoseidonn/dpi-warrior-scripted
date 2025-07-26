@@ -17,10 +17,7 @@
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "YOUR_DOMAIN"
-        },
+        "security": "none",
         "xhttpSettings": {
           "path": "/xray",
           "host": "YOUR_DOMAIN",
