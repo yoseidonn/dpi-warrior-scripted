@@ -12,6 +12,15 @@
         "auth": "noauth",
         "udp": true
       }
+    },
+    {
+      "tag": "http-in",
+      "port": 10809,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "settings": {
+        "timeout": 300
+      }
     }
   ],
   "outbounds": [
@@ -22,7 +31,7 @@
         "vnext": [
           {
             "address": "vpn.crew-tr.com",
-            "port": 443,
+            "port": 80,
             "users": [
               {
                 "id": "e32636fd-9aae-4cc3-802e-c00033998aba",
@@ -61,7 +70,9 @@
       {
         "type": "field",
         "inboundTag": [
-          "socks-in"
+          "socks-in",
+          "http-in",
+          "ftp-in"
         ],
         "outboundTag": "vless-out"
       },
