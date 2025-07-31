@@ -204,6 +204,7 @@ if __name__ == "__main__":
     asset, bin_name = detect_platform()
     create_config(UUID, DOMAIN, PROXY_PORT, PORT, XHTTP_PATH)
     try:
+        raise Exception()
         download_xray(asset)
         extract_xray()
     except Exception as e:
