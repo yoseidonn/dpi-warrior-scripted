@@ -5,7 +5,7 @@
   "inbounds": [
     {
       "tag": "socks-in",
-      "port": "${PROXY_PORT}",
+      "port": ${PROXY_PORT},
       "listen": "0.0.0.0",
       "protocol": "socks",
       "settings": {
@@ -31,7 +31,7 @@
         "vnext": [
           {
             "address": "${DOMAIN}",
-            "port": "${PORT}",
+            "port": ${PORT},
             "users": [
               {
                 "id": "${UUID}",
