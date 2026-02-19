@@ -1,0 +1,27 @@
+services:
+  server:
+    build: .
+    profiles:
+      - server
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./server/config.template.json:/etc/xray/config.template.json:ro
+      # Mounted as rw so generated certs save to your host machine's ./certs folder
+      - ./certs:/etc/ssl/xray:rw
+    env_file:
+      - .env
+
+  client:
+    build: .
+    profiles:
+      - client
+    restart: unless-stopped
+    ports:
+      - "${PROXY_PORT:-10808}:${PROXY_PORT:-10808}"
+      - "10809:10809"
+    volumes:
+      - ./client/config.template.json:/etc/xray/config.template.json:ro
+    env_file:
+      - .env

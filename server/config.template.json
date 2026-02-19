@@ -4,12 +4,13 @@
   },
   "inbounds": [
     {
-      "port": 10000,
+      "listen": "0.0.0.0",
+      "port": 443,
       "protocol": "vless",
       "settings": {
         "clients": [
           {
-            "id": "YOUR_UUID",
+            "id": "${UUID}",
             "flow": ""
           }
         ],
@@ -17,11 +18,19 @@
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "none",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "${DOMAIN}",
+          "certificates": [
+            {
+              "certificateFile": "${CERT_FILE}",
+              "keyFile": "${KEY_FILE}"
+            }
+          ]
+        },
         "xhttpSettings": {
-          "path": "/xray",
-          "host": "YOUR_DOMAIN",
-          "acceptProxyProtocol": false
+          "path": "${XHTTP_PATH}",
+          "host": "${DOMAIN}"
         }
       },
       "sniffing": {
@@ -32,8 +41,7 @@
   ],
   "outbounds": [
     {
-      "protocol": "freedom",
-      "settings": {}
+      "protocol": "freedom"
     }
   ]
 }

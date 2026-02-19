@@ -5,8 +5,8 @@
   "inbounds": [
     {
       "tag": "socks-in",
-      "port": 10808,
-      "listen": "127.0.0.1",
+      "port": "${PROXY_PORT}",
+      "listen": "0.0.0.0",
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
@@ -16,7 +16,7 @@
     {
       "tag": "http-in",
       "port": 10809,
-      "listen": "127.0.0.1",
+      "listen": "0.0.0.0",
       "protocol": "http",
       "settings": {
         "timeout": 300
@@ -30,11 +30,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "vpn.crew-tr.com",
-            "port": 443,
+            "address": "${DOMAIN}",
+            "port": "${PORT}",
             "users": [
               {
-                "id": "e32636fd-9aae-4cc3-802e-c00033998aba",
+                "id": "${UUID}",
                 "encryption": "none"
               }
             ]
@@ -45,12 +45,12 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "vpn.crew-tr.com",
+          "serverName": "${DOMAIN}",
           "allowInsecure": false
         },
         "xhttpSettings": {
-          "path": "/xray",
-          "host": "vpn.crew-tr.com",
+          "path": "${XHTTP_PATH}",
+          "host": "${DOMAIN}",
           "acceptProxyProtocol": false
         }
       }
@@ -73,17 +73,12 @@
     "rules": [
       {
         "type": "field",
-        "inboundTag": [
-          "socks-in",
-          "http-in"
-        ],
+        "inboundTag": ["socks-in", "http-in"],
         "outboundTag": "vless-out"
       },
       {
         "type": "field",
-        "domain": [
-          "geosite:category-ads"
-        ],
+        "domain": ["geosite:category-ads"],
         "outboundTag": "blocked"
       }
     ]
