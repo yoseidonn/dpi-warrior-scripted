@@ -11,12 +11,14 @@ if [ ! -f "$CERT_FILE" ] || [ ! -f "$KEY_FILE" ]; then
 
     cat > /tmp/openssl.cnf <<EOF
 [req]
-distinguished_name=req
-x509_extensions=v3_req
-prompt=no
+default_bits       = 4096
+prompt             = no
+default_md         = sha256
+distinguished_name = dn
+x509_extensions    = v3_req
 
-[req_distinguished_name]
-CN=${DOMAIN}
+[dn]
+CN = ${DOMAIN}
 
 [v3_req]
 keyUsage = keyEncipherment, dataEncipherment
@@ -27,11 +29,11 @@ subjectAltName = @alt_names
 IP.1 = ${DOMAIN}
 EOF
 
-    openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
+    openssl req -x509 -nodes -days 365 \
+        -newkey rsa:4096 \
         -keyout "$KEY_FILE" \
         -out "$CERT_FILE" \
-        -config /tmp/openssl.cnf \
-        -extensions v3_req
+        -config /tmp/openssl.cnf
 
     rm /tmp/openssl.cnf
 
