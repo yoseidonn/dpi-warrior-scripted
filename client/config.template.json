@@ -46,7 +46,7 @@
         "security": "tls",
         "tlsSettings": {
           "serverName": "${DOMAIN}",
-          "allowInsecure": false
+          "allowInsecure": true
         },
         "xhttpSettings": {
           "path": "${XHTTP_PATH}",
