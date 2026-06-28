@@ -8,16 +8,15 @@ services:
       - "443:443"
     volumes:
       - ./server/config.template.json:/etc/xray/config.template.json:ro
-      # Mounted as rw so generated certs save to your host machine's ./certs folder
       - ./certs:/etc/ssl/xray:rw
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "wget", "--no-check-certificate", "-qO-", "https://localhost:443/${XHTTP_PATH:-/xray}"]
+      test: ["CMD-SHELL", "nc -z localhost 443 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
   client:
     build: .
