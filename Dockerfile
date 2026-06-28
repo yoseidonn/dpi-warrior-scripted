@@ -2,10 +2,13 @@
 FROM ghcr.io/xtls/xray-core:25.6.8 AS xray-base
 
 # Build the runtime image
-FROM alpine:latest
+FROM alpine:3.21
 
 # Install gettext for envsubst and ca-certificates for TLS support, tzdata for timezone data, and openssl for any cryptographic needs
 RUN apk add --no-cache gettext ca-certificates tzdata openssl
+
+# Create non-root user and cert directory
+RUN adduser -D xray && mkdir -p /etc/ssl/xray && chown xray:xray /etc/ssl/xray
 
 # Copy Xray binary and dat files
 COPY --from=xray-base /usr/local/bin/xray /usr/local/bin/xray
@@ -16,5 +19,7 @@ COPY entrypoint.sh /entrypoint.sh
 COPY generate-certificates.sh /generate-certificates.sh
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /generate-certificates.sh
+
+USER xray
 
 ENTRYPOINT ["/entrypoint.sh"]

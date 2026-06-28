@@ -16,9 +16,9 @@ Security: TLS (Auto-generated self-signed certificates available)
 .
 ├── docker-compose.yml       # Manages both server and client profiles
 ├── Dockerfile               # Multi-stage build for Xray + envsubst
-├── setup.py                 # Interactive script to generate your .env file
+├── setup-env.py             # Interactive script to generate your .env file
 ├── entrypoint.sh            # Injects environment variables at runtime
-├── generate-certificate.sh  # Auto-generates self-signed TLS certs
+├── generate-certificates.sh  # Auto-generates self-signed TLS certs
 ├── client/
 │   └── config.template.json # Xray client template
 ├── server/
@@ -53,14 +53,14 @@ services:
 
 Run the interactive setup script to generate your configuration. It will ask whether you are setting up the remote VPS or your local machine.
 ```bash
-python3 setup.py
+python3 setup-env.py
 ```
 
 This will generate an .env file in the root directory. Keep this file secure, as it contains your UUID.
 
 2. Deploy the Server (On your VPS)
 
-After running setup.py and selecting server, start the server profile.
+After running setup-env.py and selecting server, start the server profile.
 ```bash
 docker compose --profile server up -d --build
 ```
@@ -69,7 +69,7 @@ docker compose --profile server up -d --build
 
 3. Deploy the Client (On your Local Machine)
 
-After running setup.py and selecting client, start the client profile.
+After running setup-env.py and selecting client, start the client profile.
 ```bash
 docker compose --profile client up -d --build
 ```

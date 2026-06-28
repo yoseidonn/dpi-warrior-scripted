@@ -12,6 +12,12 @@ services:
       - ./certs:/etc/ssl/xray:rw
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "wget", "--no-check-certificate", "-qO-", "https://localhost:443/${XHTTP_PATH:-/xray}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   client:
     build: .
