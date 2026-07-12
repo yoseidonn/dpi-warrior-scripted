@@ -4,24 +4,21 @@
   },
   "inbounds": [
     {
-      "port": 10000,
+      "listen": "/dev/shm/xrxh.socket,0666",
       "protocol": "vless",
       "settings": {
         "clients": [
           {
-            "id": "YOUR_UUID",
-            "flow": ""
+            "id": "YOUR_UUID"
           }
         ],
         "decryption": "none"
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "none",
         "xhttpSettings": {
-          "path": "/xray",
-          "host": "YOUR_DOMAIN",
-          "acceptProxyProtocol": false
+          "mode": "stream-one",
+          "path": "/xray"
         }
       },
       "sniffing": {
@@ -34,6 +31,20 @@
     {
       "protocol": "freedom",
       "settings": {}
+    },
+    {
+      "tag": "blocked",
+      "protocol": "blackhole",
+      "settings": {}
     }
-  ]
+  ],
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "ip": ["geoip:private"],
+        "outboundTag": "blocked"
+      }
+    ]
+  }
 }
